@@ -1,7 +1,5 @@
-"""Shared metrics: accuracy + F1 (proposal evaluation criteria).
+"""Shared metrics: accuracy + F1 (proposal evaluation criteria)."""
 
-Owner: Prateek Tandon
-"""
 
 from __future__ import annotations
 

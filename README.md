@@ -1,8 +1,8 @@
 # Classical vs Quantum Kernels for Binary Classification and Their Practicality
 
-**Team:** Steve Cho, Kushal Agrawal, Shunzhe Yang, Prateek Tandon
-
 Compare **Linear SVM**, **RBF SVM**, and **Quantum Kernel SVM** on binary datasets (MNIST subset, Breast Cancer Wisconsin), under limited qubits / features.
+
+Workstreams are unassigned — grab whatever you’re interested in (see `todo.md`).
 
 ## Quick start
 

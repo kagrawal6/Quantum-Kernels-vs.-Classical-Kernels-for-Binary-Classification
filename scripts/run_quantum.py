@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 def main() -> None:
     print("TODO: load data → feature map → quantum kernel → precomputed SVM")
-    print("See src/quantum/ and todo.md (Shunzhe + team).")
+    print("See src/quantum/ and todo.md.")
 
 
 if __name__ == "__main__":

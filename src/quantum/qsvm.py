@@ -1,6 +1,5 @@
 """Quantum Kernel SVM (classical SVM + quantum kernel matrix).
 
-Owner: Shunzhe Yang (+ team help on Qiskit / hardware)
 Reference: Havlíček et al. [3]
 """
 

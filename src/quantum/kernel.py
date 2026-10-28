@@ -1,6 +1,5 @@
 """Quantum kernel estimation.
 
-Owner: Shunzhe Yang
 References:
   [3] Havlíček et al. — quantum kernel estimator (QKE)
   [4] Thanasilp et al. — watch for kernel concentration under noise / expressivity

@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 def main() -> None:
     print("TODO: run linear vs RBF vs QSVM sweeps; save CSV to results/")
-    print("Owner: Prateek Tandon — see todo.md")
+    print("See todo.md.")
 
 
 if __name__ == "__main__":

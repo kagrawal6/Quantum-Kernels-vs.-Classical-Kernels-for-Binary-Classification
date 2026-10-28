@@ -1,7 +1,5 @@
-"""Experiment runners: vary features, train size, qubits, shots, etc.
+"""Experiment runners: vary features, train size, qubits, shots, etc."""
 
-Owner: Prateek Tandon
-"""
 
 from __future__ import annotations
 

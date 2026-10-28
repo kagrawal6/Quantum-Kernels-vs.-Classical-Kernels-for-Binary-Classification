@@ -1,7 +1,5 @@
-"""Classical SVM baselines (linear + RBF).
+"""Classical SVM baselines (linear + RBF)."""
 
-Owner: Kushal Agrawal
-"""
 
 from __future__ import annotations
 

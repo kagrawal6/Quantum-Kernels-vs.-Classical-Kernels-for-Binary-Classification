@@ -1,6 +1,5 @@
 """Quantum feature maps (Z / ZZ style).
 
-Owner: Shunzhe Yang
 Reference: Havlíček et al. [3] — quantum-enhanced feature spaces / QKE.
 """
 

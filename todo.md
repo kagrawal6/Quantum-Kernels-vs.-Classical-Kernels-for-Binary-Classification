@@ -1,7 +1,8 @@
 # Project TODO
 
-**Project:** Classical vs Quantum Kernels for Binary Classification and Their Practicality  
-**Team:** Steve Cho, Kushal Agrawal, Shunzhe Yang, Prateek Tandon
+**Project:** Classical vs Quantum Kernels for Binary Classification and Their Practicality
+
+Pick up areas based on interest — nothing is pre-assigned.
 
 ---
 
@@ -16,7 +17,7 @@
 
 ---
 
-## Phase 0 — Setup (all)
+## Phase 0 — Setup · all
 
 - [ ] Create / activate shared Python env
 - [ ] `pip install -r requirements.txt`
@@ -25,18 +26,18 @@
 
 ---
 
-## Phase 1 — Dataset preparation (Steve) · Nov 3–15
+## Phase 1 — Dataset preparation · Nov 3–15
 
 - [ ] Finalize Breast Cancer loader (`src/data/load.py`) — [2]
 - [ ] Add MNIST binary loader (pick digit pair, e.g. 0 vs 1) — [1]
 - [ ] Implement / verify PCA + SelectKBest (`src/data/preprocess.py`)
 - [ ] Save processed arrays under `data/processed/` (optional caching)
-- [ ] Report how accuracy of a simple baseline changes with `n_features ∈ {2,4,6,8}`
+- [ ] Report how a simple baseline changes with `n_features ∈ {2,4,6,8}`
 - [ ] Document train sizes to sweep (e.g. 20% / 50% / 100% of training split)
 
 ---
 
-## Phase 2 — Classical SVMs (Kushal) · Nov 3–15
+## Phase 2 — Classical SVMs · Nov 3–15
 
 - [ ] Linear SVM working end-to-end (`src/classical/svm.py`)
 - [ ] RBF SVM working end-to-end
@@ -47,7 +48,7 @@
 
 ---
 
-## Phase 3 — Quantum kernel SVM (Shunzhe + team) · Nov 3–15
+## Phase 3 — Quantum kernel SVM · Nov 3–15
 
 Inspired by Havlíček et al. [3] (quantum kernel estimator path, not full QVC focus).
 
@@ -62,7 +63,7 @@ Inspired by Havlíček et al. [3] (quantum kernel estimator path, not full QVC f
 
 ---
 
-## Phase 4 — Experiments & analysis (Prateek + all) · Nov 16–22
+## Phase 4 — Experiments & analysis · Nov 16–22
 
 - [ ] Unified runner: linear vs RBF vs QSVM (`src/evaluation/experiments.py`, `scripts/run_experiments.py`)
 - [ ] Sweep: feature count, train size, qubits / map reps, shots
@@ -83,14 +84,14 @@ Inspired by Havlíček et al. [3] (quantum kernel estimator path, not full QVC f
 
 ---
 
-## Repo map (who owns what)
+## Repo map
 
 ```
 configs/default.yaml          # shared experiment knobs
-src/data/                     # Steve — load + PCA / feature select
-src/classical/                # Kushal — linear + RBF SVM
-src/quantum/                  # Shunzhe — feature maps, kernel, QSVM
-src/evaluation/               # Prateek — metrics, sweeps
+src/data/                     # load + PCA / feature select
+src/classical/                # linear + RBF SVM
+src/quantum/                  # feature maps, kernel, QSVM
+src/evaluation/               # metrics, sweeps
 scripts/                      # thin CLIs to run pieces
 results/  figures/            # outputs
 notebooks/                    # optional EDA / demos
@@ -100,6 +101,6 @@ notebooks/                    # optional EDA / demos
 
 ## Immediate next 3 actions
 
-1. **Kushal / anyone:** run `python scripts/run_classical.py` and paste first Breast Cancer linear/RBF scores in chat or `results/`.
-2. **Steve:** implement MNIST binary loader + confirm PCA shapes `(n_samples, n_features)`.
-3. **Shunzhe:** fill in `compute_quantum_kernel` with Qiskit fidelity kernel (simulator first).
+1. Run `python scripts/run_classical.py` and save first Breast Cancer linear/RBF scores to `results/`.
+2. Implement MNIST binary loader + confirm PCA shapes `(n_samples, n_features)`.
+3. Fill in `compute_quantum_kernel` with Qiskit fidelity kernel (simulator first).

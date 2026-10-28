@@ -1,6 +1,5 @@
 """Dataset loaders.
 
-Owner: Steve Cho
 Datasets: Breast Cancer Wisconsin [2], MNIST binary subset [1]
 """
 

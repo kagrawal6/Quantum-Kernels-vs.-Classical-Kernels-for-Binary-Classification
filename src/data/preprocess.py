@@ -1,6 +1,5 @@
 """Feature reduction and train/test splitting.
 
-Owner: Steve Cho
 Use PCA or feature selection so data fits limited qubits.
 """
 

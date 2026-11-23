@@ -1,106 +1,65 @@
-# Project TODO
+# TODO
 
-**Project:** Classical vs Quantum Kernels for Binary Classification and Their Practicality
-
-Pick up areas based on interest — nothing is pre-assigned.
+Phased plan. Details for each area are in that folder's `README.md`; measurement definitions are in [EXPERIMENTS.md](EXPERIMENTS.md).
 
 ---
 
-## References (keep cited while implementing)
+## Phase 0 — Agree as a team (before coding)
 
-| ID | Paper / dataset | Why we care |
-|----|-----------------|-------------|
-| [1] | LeCun et al., MNIST handwritten digit database (2010) | Digit recognition dataset |
-| [2] | Wolberg et al., Breast Cancer Wisconsin (Diagnostic), UCI (1993) https://doi.org/10.24432/C5DW2B | Medical binary classification dataset |
-| [3] | Havlíček et al., “Supervised learning with quantum-enhanced feature spaces,” *Nature* 567, 209–212 (2019) https://doi.org/10.1038/s41586-019-0980-2 | QVC + **QKE** (quantum kernel estimator) → our QSVM approach |
-| [4] | Thanasilp et al., “Exponential concentration in quantum kernel methods,” *Nature Communications* (2024) https://doi.org/10.1038/s41467-024-49287-w | Kernel values can collapse → check kernel spread; watch shots / noise / expressivity |
-
----
-
-## Phase 0 — Setup · all
-
-- [ ] Create / activate shared Python env
-- [ ] `pip install -r requirements.txt`
-- [ ] Confirm `python scripts/run_classical.py` runs on Breast Cancer
-- [ ] Agree on default config in `configs/default.yaml` (start with `n_features=4`)
+- [ ] Read [EXPERIMENTS.md](EXPERIMENTS.md) and agree on the defaults
+- [ ] Confirm MNIST digit pair (default 3 vs 5)
+- [ ] Set the time budget for one QSVM run (caps the training-size sweep) → `configs/default.yaml`
+- [ ] Agree on the interfaces in [src/README.md](src/README.md)
+- [ ] Pick one machine for all timed runs
+- [ ] Everyone: set up the environment from `requirements.txt`
 
 ---
 
-## Phase 1 — Dataset preparation · Nov 3–15
+## Phase 1 — Build the pipeline · Nov 3–15
 
-- [ ] Finalize Breast Cancer loader (`src/data/load.py`) — [2]
-- [ ] Add MNIST binary loader (pick digit pair, e.g. 0 vs 1) — [1]
-- [ ] Implement / verify PCA + SelectKBest (`src/data/preprocess.py`)
-- [ ] Save processed arrays under `data/processed/` (optional caching)
-- [ ] Report how a simple baseline changes with `n_features ∈ {2,4,6,8}`
-- [ ] Document train sizes to sweep (e.g. 20% / 50% / 100% of training split)
+**Data** — [src/data/](src/data/README.md)
+- [ ] Loaders for Breast Cancer and MNIST 3 vs 5 (positive class = 1)
+- [ ] Fixed stratified test set + training subsample by seed
+- [ ] PCA / SelectKBest + train-only scaling to `[0, π]`
 
----
+**Classical** — [src/classical/](src/classical/README.md)
+- [ ] Linear and RBF kernel builders (precomputed)
+- [ ] CV tuning of `C`
 
-## Phase 2 — Classical SVMs · Nov 3–15
+**Quantum** — [src/quantum/](src/quantum/README.md)
+- [ ] Z / ZZ feature maps with reps, entanglement, bandwidth
+- [ ] Exact (statevector) kernel builder
+- [ ] Cost counts + kernel diagnostics
 
-- [ ] Linear SVM working end-to-end (`src/classical/svm.py`)
-- [ ] RBF SVM working end-to-end
-- [ ] Light hyperparameter search (`C`, `gamma`) on validation / CV
-- [ ] Record **accuracy + F1** baselines for each dataset / feature count
-- [ ] Save baseline numbers to `results/classical_baseline.csv`
-- [ ] Keep classical pipeline API stable so quantum side can plug in later
+**Evaluation** — [src/evaluation/](src/evaluation/README.md)
+- [ ] Metrics + timers + single-run function writing one CSV row
+- [ ] `scripts/run_baseline` working end to end for all three models
 
----
-
-## Phase 3 — Quantum kernel SVM · Nov 3–15
-
-Inspired by Havlíček et al. [3] (quantum kernel estimator path, not full QVC focus).
-
-- [ ] Set up Qiskit / Aer simulator
-- [ ] Implement Z and ZZ feature maps (`src/quantum/feature_maps.py`) — [3]
-- [ ] Implement kernel estimation (`src/quantum/kernel.py`)
-- [ ] Train SVM with `kernel="precomputed"` (`src/quantum/qsvm.py`)
-- [ ] Get a first Aer simulator result on Breast Cancer (`n_features=4`, few samples if slow)
-- [ ] Add kernel diagnostics (`kernel_diagnostics`) — mean/std of off-diagonal entries — [4]
-- [ ] If kernel values look “flat,” reduce `reps`, simplify map, or increase `shots` — [4]
-- [ ] (Stretch) noisy simulator; (stretch) limited IBM hardware run
+**Milestone:** baseline table at the defaults for both datasets.
 
 ---
 
-## Phase 4 — Experiments & analysis · Nov 16–22
+## Phase 2 — Experiments · Nov 16–22
 
-- [ ] Unified runner: linear vs RBF vs QSVM (`src/evaluation/experiments.py`, `scripts/run_experiments.py`)
-- [ ] Sweep: feature count, train size, qubits / map reps, shots
-- [ ] Log accuracy, F1, runtime / shot cost → `results/`
-- [ ] Plots in `figures/` (bar charts + sweep curves)
-- [ ] Write short interpretation:
-  - If QSVM wins: is the gain worth quantum cost?
-  - If QSVM loses: link causes to data size / features / shots / concentration [4]
+**Priority sweeps** (all models, 5 seeds)
+- [ ] Feature count {2, 4, 6, 8}
+- [ ] Training set size (double until QSVM hits the time budget)
+- [ ] Model parameters: RBF `gamma`; QSVM feature map, reps, entanglement, bandwidth
 
----
+**Secondary**
+- [ ] Shots sweep (QSVM)
+- [ ] Kernel diagnostics across sweeps (concentration check [4])
+- [ ] Peak memory (low priority)
+- [ ] Optional: noisy simulator
 
-## Phase 5 — Report & presentation · Nov 23–Dec 2
-
-- [ ] Finalize tables / figures
-- [ ] Write methods + results in final report (cite [1]–[4])
-- [ ] Prepare presentation slides
-- [ ] Dry run as a team
+**Milestone:** all CSVs in `results/`.
 
 ---
 
-## Repo map
+## Phase 3 — Analysis, report, presentation · Nov 23–Dec 2
 
-```
-configs/default.yaml          # shared experiment knobs
-src/data/                     # load + PCA / feature select
-src/classical/                # linear + RBF SVM
-src/quantum/                  # feature maps, kernel, QSVM
-src/evaluation/               # metrics, sweeps
-scripts/                      # thin CLIs to run pieces
-results/  figures/            # outputs
-notebooks/                    # optional EDA / demos
-```
-
----
-
-## Immediate next 3 actions
-
-1. Run `python scripts/run_classical.py` and save first Breast Cancer linear/RBF scores to `results/`.
-2. Implement MNIST binary loader + confirm PCA shapes `(n_samples, n_features)`.
-3. Fill in `compute_quantum_kernel` with Qiskit fidelity kernel (simulator first).
+- [ ] Figures listed in [figures/README.md](figures/README.md)
+- [ ] Summary tables (mean ± std over seeds)
+- [ ] Interpretation: if QSVM wins, is it worth the cost? If it loses, which factor explains it?
+- [ ] Final report (cite [1]–[4])
+- [ ] Presentation + dry run

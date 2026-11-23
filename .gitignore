@@ -9,15 +9,15 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data / results (keep folders via .gitkeep)
+# Data and outputs (keep folder READMEs)
 data/raw/*
-!data/raw/.gitkeep
+!data/raw/README.md
 data/processed/*
-!data/processed/.gitkeep
+!data/processed/README.md
 results/*
-!results/.gitkeep
+!results/README.md
 figures/*
-!figures/.gitkeep
+!figures/README.md
 
 # OS / IDE
 .DS_Store

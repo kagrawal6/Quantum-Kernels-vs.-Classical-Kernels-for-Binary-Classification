@@ -1,34 +1,40 @@
-# Default experiment settings
-# Edit this file (or copy it) instead of hardcoding values in scripts.
+# Agreed defaults and sweep values.
+# Mirrors EXPERIMENTS.md (Sections 3-6). Change both together.
 
-datasets:
-  - breast_cancer
-  # - mnist_binary  # e.g. digits 0 vs 1; enable after loader is ready
+data:
+  datasets: [breast_cancer, mnist_3v5]
+  positive_class:
+    breast_cancer: malignant
+    mnist_3v5: 5
+  reduction: pca            # pca | select_k
+  n_features: 4
+  n_train: 100
+  n_test: 100
+  seeds: [0, 1, 2, 3, 4]
 
-preprocess:
-  method: pca          # pca | select_k
-  n_features: 4        # keep small for NISQ / qubit limits
-  test_size: 0.2
-  random_state: 42
-  scale: true
+svm:
+  C_grid: [0.01, 0.1, 1, 10, 100]
+  cv_folds: 5
 
-classical:
-  linear:
-    C: 1.0
-  rbf:
-    C: 1.0
-    gamma: scale
+rbf:
+  gamma: scale
 
 quantum:
-  feature_map: zz      # z | zz
-  n_qubits: 4          # usually matches n_features
-  reps: 1              # circuit depth / repetitions
-  shots: 1024
-  backend: aer_simulator  # aer_simulator | ibm_hardware (later)
+  feature_map: zz           # z | zz
+  reps: 2
+  entanglement: linear      # linear | full
+  bandwidth: 1.0
+  backend: statevector      # statevector (exact) | shots | noisy
 
-experiment:
-  metrics: [accuracy, f1]
-  vary:
-    n_features: [2, 4, 6, 8]
-    train_sizes: [0.2, 0.5, 1.0]
-    shots: [256, 1024, 4096]
+sweeps:
+  # priority
+  n_features: [2, 4, 6, 8]
+  n_train: [25, 50, 100, 200, 400]   # extend by doubling until QSVM exceeds time budget
+  time_budget_minutes: null          # TODO: agree as a team
+  rbf_gamma: [0.01, 0.1, 1, 10, scale]
+  feature_map: [z, zz]
+  reps: [1, 2, 3]
+  entanglement: [linear, full]
+  bandwidth: [0.1, 0.25, 0.5, 1.0]
+  # secondary
+  shots: [exact, 256, 1024, 4096]

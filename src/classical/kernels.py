@@ -1,4 +1,4 @@
-"""Classical kernels — TEMPLATE for the classical-SVM owner (Kushal).
+"""Classical kernels — TEMPLATE for the classical-SVM owners (Jerry + Colin).
 
 Fill in the two TODOs. The signatures are fixed: the shared runner
 (src/evaluation/runner.py) calls them like this:

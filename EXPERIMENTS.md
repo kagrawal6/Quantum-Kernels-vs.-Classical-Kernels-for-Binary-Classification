@@ -72,7 +72,7 @@ For QSVM the kernel does not depend on `C`, so compute the kernel once and reuse
 | QSVM | feature map | {Z, ZZ} |
 | QSVM | `reps` (circuit depth) | {1, 2, 3} |
 | QSVM | entanglement | {linear, full} |
-| QSVM | bandwidth λ (scale inputs by λ before encoding) | {0.1, 0.25, 0.5, 1.0} |
+| QSVM | bandwidth λ (scale inputs by λ before encoding) | {0.025, 0.05, 0.1, 0.25, 0.5, 1.0} |
 
 Bandwidth is the quantum counterpart of RBF `gamma`, and smaller bandwidth is a known way to reduce kernel concentration [4] (Shaydulin & Wild 2022; Canatar et al. 2023 — verify before citing).
 
@@ -88,7 +88,7 @@ Bandwidth is the quantum counterpart of RBF `gamma`, and smaller bandwidth is a 
 | `n_train` | 100 (stratified subsample) |
 | `n_test` | 100 (fixed, stratified) |
 | Seeds | 0, 1, 2, 3, 4 |
-| QSVM feature map | ZZ, `reps=2`, linear entanglement, bandwidth 1.0 |
+| QSVM feature map | ZZ, `reps=2`, linear entanglement, bandwidth 0.05 (chosen on a validation split, test set untouched: `scripts/pick_bandwidth.py`) |
 | QSVM backend | exact statevector simulation (no shot noise) |
 | RBF `gamma` | `"scale"` |
 

@@ -23,7 +23,7 @@ quantum:
   feature_map: zz           # z | zz
   reps: 2
   entanglement: linear      # linear | full
-  bandwidth: 1.0
+  bandwidth: 0.05          # chosen on a validation split (scripts/pick_bandwidth.py); 1.0 concentrates the kernel
   backend: statevector      # statevector (exact) | shots | noisy
 
 sweeps:
@@ -35,7 +35,7 @@ sweeps:
   feature_map: [z, zz]
   reps: [1, 2, 3]
   entanglement: [linear, full]
-  bandwidth: [0.1, 0.25, 0.5, 1.0]
+  bandwidth: [0.025, 0.05, 0.1, 0.25, 0.5, 1.0]
   # secondary
   shots: [exact, 256, 1024, 4096]
 

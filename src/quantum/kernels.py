@@ -1,4 +1,4 @@
-"""Quantum (fidelity) kernel — TEMPLATE for the quantum-SVM owner (Jerry).
+"""Quantum (fidelity) kernel — TEMPLATE for the quantum-SVM owner (Kushal).
 
 Fill in the TODOs. The signatures are fixed: the shared runner
 (src/evaluation/runner.py) calls them like this:

@@ -14,11 +14,18 @@ Everything here follows [EXPERIMENTS.md](../../EXPERIMENTS.md) — metric defini
 - **Sweeps:** loop one variable at a time over all models and 5 seeds, holding everything else at the defaults.
 - **Summaries:** group by setting and model, report mean ± std over seeds.
 
+## Files
+- `metrics.py`: accuracy / precision / recall / F1, and kernel off-diagonal diagnostics.
+- `models.py`: registry of the three models (kernel function, which config params it takes, optional cost function).
+- `runner.py`: `run_one(...)` = data → `K_train`, `K_test` (timed) → tune `C` by stratified 5-fold CV on `K_train`, scoring F1 (not timed) → fit, predict (timed) → one row with all Section 7 columns. Also CSV append / resume and `results/machine.txt`.
+- `sweeps.py`: turns `configs/default.yaml` into the runs for each sweep (one factor at a time).
+
 ## TODO
-- [ ] Metrics helper (accuracy, precision, recall, F1)
-- [ ] Timing helper for the four timed steps
-- [ ] Single-run function that writes one row with all Section 7 columns
-- [ ] Sweep runner: feature count, training size, model parameters (priority)
-- [ ] Shots sweep for QSVM (secondary)
-- [ ] Summary table (mean ± std over seeds)
-- [ ] Record the machine specs used for timing
+- [x] Metrics helper (accuracy, precision, recall, F1)
+- [x] Timing helper for the four timed steps
+- [x] Single-run function that writes one row with all Section 7 columns
+- [x] Sweep runner: feature count, training size, model parameters (priority)
+- [x] Shots sweep for QSVM (secondary)
+- [x] Summary table (mean ± std over seeds) — `scripts/summarize.py`
+- [x] Record the machine specs used for timing
+- [ ] Peak memory (low priority; column exists, left empty)

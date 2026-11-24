@@ -6,7 +6,7 @@ data:
   positive_class:
     breast_cancer: malignant
     mnist_3v5: 5
-  reduction: pca            # pca | select_k
+  reduction: pca            # pca | select_k  (PCA fit on non-test pool; select_k fit on train)
   n_features: 4
   n_train: 100
   n_test: 100
@@ -38,3 +38,30 @@ sweeps:
   bandwidth: [0.1, 0.25, 0.5, 1.0]
   # secondary
   shots: [exact, 256, 1024, 4096]
+
+# Real-hardware run (scripts/run_hardware.py). Kept tiny on purpose: AWS bills
+# every kernel circuit as one task. n_circuits = n_train(n_train-1)/2 + n_test*n_train.
+hardware:
+  dataset: breast_cancer
+  n_features: 2               # = qubits; fewer qubits -> shallower circuit -> less noise
+  n_train: 8
+  n_test: 6                   # 28 + 48 = 76 circuits
+  seed: 0
+  feature_map: zz
+  reps: 1                     # shallow on purpose (hardware noise grows with depth)
+  entanglement: linear
+  bandwidth: 0.25             # bandwidth 1.0 concentrates the kernel even in simulation
+  shots: 200                  # per-entry std <= 0.035
+  C: 1.0                      # too few points for 5-fold CV; same C for every kernel compared
+  batch_size: 10              # circuits per submission; progress is saved after each
+  device: Cepheus-1-108Q      # must match a key in prices and a Braket device name
+  # USD. VERIFY at https://aws.amazon.com/braket/pricing before submitting (checked Nov 2026
+  # via third-party listings). Task fee is per circuit.
+  prices:
+    Cepheus-1-108Q: {task_fee: 0.30, per_shot: 0.000425}   # Rigetti
+    Garnet:         {task_fee: 0.30, per_shot: 0.00145}    # IQM
+    Emerald:        {task_fee: 0.30, per_shot: 0.0016}     # IQM
+    Forte-1:        {task_fee: 0.30, per_shot: 0.08}       # IonQ - ~$16/circuit at 200 shots, avoid
+  max_run_usd: 50             # one run may not cost more than this
+  max_total_usd: 80           # all runs together (spend ledger); leaves $20 of the $100 untouched
+  safety_margin: 1.2          # estimates are multiplied by this before checking the caps

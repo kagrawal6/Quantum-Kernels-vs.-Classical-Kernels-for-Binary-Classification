@@ -18,13 +18,13 @@ Phased plan. Details for each area are in that folder's `README.md`; measurement
 ## Phase 1 — Build the pipeline · Nov 3–15
 
 **Data** — [src/data/](src/data/README.md)
-- [ ] Loaders for Breast Cancer and MNIST 3 vs 5 (positive class = 1)
-- [ ] Fixed stratified test set + training subsample by seed
-- [ ] PCA / SelectKBest + train-only scaling to `[0, π]`
+- [x] Loaders for Breast Cancer and MNIST 3 vs 5 (positive class = 1)
+- [x] Fixed stratified test set + training subsample by seed
+- [x] PCA / SelectKBest + train-only scaling to `[0, π]`
 
 **Classical** — [src/classical/](src/classical/README.md)
 - [ ] Linear and RBF kernel builders (precomputed)
-- [ ] CV tuning of `C`
+- [x] CV tuning of `C`
 
 **Quantum** — [src/quantum/](src/quantum/README.md)
 - [ ] Z / ZZ feature maps with reps, entanglement, bandwidth
@@ -32,8 +32,8 @@ Phased plan. Details for each area are in that folder's `README.md`; measurement
 - [ ] Cost counts + kernel diagnostics
 
 **Evaluation** — [src/evaluation/](src/evaluation/README.md)
-- [ ] Metrics + timers + single-run function writing one CSV row
-- [ ] `scripts/run_baseline` working end to end for all three models
+- [x] Metrics + timers + single-run function writing one CSV row
+- [x] `scripts/run_experiment.py --sweep baseline` working end to end (harness done; needs the kernel TODOs filled)
 
 **Milestone:** baseline table at the defaults for both datasets.
 

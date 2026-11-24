@@ -83,7 +83,7 @@ Bandwidth is the quantum counterpart of RBF `gamma`, and smaller bandwidth is a 
 | Setting | Default |
 |---------|---------|
 | Datasets | Breast Cancer Wisconsin; MNIST digits 3 vs 5 |
-| Reduction | PCA |
+| Reduction | PCA, fit on all non-test data (chosen over SelectKBest: `scripts/compare_reduction.py`) |
 | `n_features` | 4 |
 | `n_train` | 100 (stratified subsample) |
 | `n_test` | 100 (fixed, stratified) |

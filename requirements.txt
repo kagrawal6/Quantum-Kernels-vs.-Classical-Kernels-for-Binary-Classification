@@ -9,3 +9,5 @@ qiskit-machine-learning
 qiskit-aer
 pyyaml
 tqdm
+# Real-hardware run only (scripts/run_hardware.py); also needs AWS credentials:
+# qiskit-braket-provider

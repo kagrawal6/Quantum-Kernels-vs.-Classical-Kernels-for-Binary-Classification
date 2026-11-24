@@ -15,7 +15,9 @@ These contracts let each part be built and tested independently. Agree before ch
 
 1. **Data → everyone**
    Given `(dataset, n_features, n_train, seed)`, return `X_train, X_test, y_train, y_test`.
-   Features are already reduced and scaled; scaling is fit on the training set only.
+   Features are already reduced and scaled to `[0, π]`; the scaler is fit on the training set only.
+   PCA is fit on all non-test data (unsupervised, no labels) so features are identical across training sizes; SelectKBest (uses labels) is fit on the training set only.
+   Kernel functions have the signature `kernel(XA, XB=None, **params)`: `XB=None` → `K_train`, otherwise `K(XA=X_test, XB=X_train)`.
 
 2. **Kernels → evaluation**
    Every kernel (linear, RBF, quantum) provides two matrices:

@@ -2,21 +2,22 @@
 
 Thin command-line entry points. They read a config from `configs/`, call code in `src/`, and write CSVs to `results/`. No experiment logic should live only in a script.
 
-## Scripts to write
+## Scripts
 
-| Script | What it runs | Output |
+| Script | What it does | Output |
 |--------|--------------|--------|
-| `run_baseline` | All three models at the defaults, both datasets, 5 seeds | `results/baseline.csv` |
-| `run_sweep_features` | Feature-count sweep, all models | `results/sweep_features.csv` |
-| `run_sweep_train_size` | Training-size sweep, all models | `results/sweep_train_size.csv` |
-| `run_sweep_params` | `gamma` (RBF) and feature map / reps / entanglement / bandwidth (QSVM) | `results/sweep_params.csv` |
-| `run_sweep_shots` | Shots sweep, QSVM only (secondary) | `results/sweep_shots.csv` |
-| `make_figures` | Plots listed in `figures/README.md` from the CSVs | `figures/*.png` |
+| `check_data.py` | Data sanity checks + PCA explained-variance table | `results/pca_explained_variance.csv` |
+| `compare_reduction.py` | PCA vs SelectKBest on a validation split (why we use PCA) | printed table |
+| `check_kernels.py [classical\|quantum]` | Shape / symmetry / PSD checks; classical kernels must match `SVC(kernel=...)`, quantum must match direct statevector overlaps | printed |
+| `run_experiment.py --sweep <name>` | One sweep: `baseline`, `features`, `train_size`, `params`, `shots` | `results/<name>.csv` |
+| `summarize.py <csv>` | Mean ± std over seeds per setting | `results/summary_<name>.csv` |
+| `run_hardware.py [--local aer \| --smoke-test \| --submit]` | Tiny QSVM run on AWS Braket with spending caps (see `src/quantum/README.md`) | `results/hardware/` |
+| `make_figures` | Plots listed in `figures/README.md` | TODO |
 
-Each script should accept a config path, e.g. `python scripts/run_baseline.py --config configs/default.yaml`.
+`run_experiment.py` options: `--models linear rbf`, `--datasets breast_cancer`, `--seeds 0` (quick test), `--dry-run` (list runs), `--config <yaml>`, `--out <csv>`.
+It appends to the CSV and skips runs already there, so an interrupted sweep can be restarted. Models whose kernel is still a TODO are skipped with a message.
+For `train_size`, QSVM stops growing once one run exceeds `sweeps.time_budget_minutes` in the config, and classical models also run once on the full training pool (`n_train` = all non-test data).
 
 ## TODO
-- [ ] `run_baseline` (do this first — it tests the whole pipeline end to end)
-- [ ] The three priority sweeps
-- [ ] Shots sweep
+- [x] Baseline + all sweeps (`run_experiment.py`)
 - [ ] `make_figures`

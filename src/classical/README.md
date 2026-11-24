@@ -13,9 +13,15 @@ Classical baselines: Linear SVM and RBF SVM.
 
 `"scale"` gamma means `1 / (n_features * X_train.var())`; compute it yourself since we pass precomputed kernels.
 
+## Start here
+Fill the two TODOs in [kernels.py](kernels.py), then run `python scripts/check_kernels.py classical`.
+It passes when your precomputed kernels give exactly the same predictions as `SVC(kernel="linear")` and `SVC(kernel="rbf", gamma="scale")`.
+Then `python scripts/run_experiment.py --sweep baseline --models linear rbf`.
+C tuning, timing, metrics and diagnostics are already done by `src/evaluation/runner.py`.
+
 ## TODO
 - [ ] Linear kernel builder (train + test matrices)
 - [ ] RBF kernel builder with `gamma` (including `"scale"`)
-- [ ] CV tuning of `C` with precomputed kernels
+- [x] CV tuning of `C` with precomputed kernels (shared, in `src/evaluation/runner.py`)
 - [ ] Sanity check: precomputed results match `SVC(kernel="linear"/"rbf")` on the same data
 - [ ] First baseline numbers at the defaults for both datasets

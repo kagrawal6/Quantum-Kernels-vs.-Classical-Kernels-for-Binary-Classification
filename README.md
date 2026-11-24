@@ -18,6 +18,28 @@ The question is not only whether QSVM can match or beat classical kernels, but w
 2. **[todo.md](todo.md)** — phased task list.
 3. The `README.md` in each folder — what the folder is for and its TODOs.
 
+## How to run (quick start)
+
+```bash
+python scripts/check_data.py                          # data sanity checks + PCA variance table
+python scripts/check_kernels.py                       # are the kernels correct? (TODOs are skipped)
+python scripts/run_experiment.py --sweep baseline     # all models x datasets x 5 seeds -> results/baseline.csv
+python scripts/run_experiment.py --sweep features     # also: train_size, params, shots
+python scripts/summarize.py results/baseline.csv      # mean ± std over seeds
+```
+
+Who fills in what:
+
+| Part | File | Status |
+|------|------|--------|
+| Data (Steve) | `src/data/` | done |
+| Evaluation harness (shared) | `src/evaluation/`, `scripts/run_experiment.py` | done: tuning, timing, metrics, CSV rows, sweeps, resume |
+| Classical (Jerry + Colin) | `src/classical/kernels.py` | **template: fill the 2 TODOs** |
+| Quantum (Kushal) | `src/quantum/kernels.py` | **template: fill the TODOs** |
+| Analysis (Everyone) | run the sweeps, `scripts/summarize.py`, figures | figures TODO |
+
+A kernel is just `kernel(XA, XB=None, **params) -> matrix`. The harness does everything else, identically for all three models.
+
 ## Repository layout
 
 ```

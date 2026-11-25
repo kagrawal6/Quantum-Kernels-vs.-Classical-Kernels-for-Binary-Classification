@@ -4,7 +4,7 @@ scikit-learn
 matplotlib
 seaborn
 jupyter
-qiskit
+qiskit            # on Python 3.10 use qiskit==2.1.* (newer releases fail to import there)
 qiskit-machine-learning
 qiskit-aer
 pyyaml

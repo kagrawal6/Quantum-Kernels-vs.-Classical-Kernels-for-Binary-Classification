@@ -1,6 +1,6 @@
-"""Classical kernels — TEMPLATE for the classical-SVM owners (Jerry + Colin).
+"""Classical kernels: linear and RBF (owners: Jerry + Collin).
 
-Fill in the two TODOs. The signatures are fixed: the shared runner
+The signatures are fixed: the shared runner
 (src/evaluation/runner.py) calls them like this:
 
     K_train = kernel(X_train)            # XB=None  -> shape (n_train, n_train)
@@ -15,15 +15,13 @@ Check your work:  python scripts/check_kernels.py
 """
 
 import numpy as np
+from sklearn.metrics.pairwise import linear_kernel as _sk_linear
+from sklearn.metrics.pairwise import rbf_kernel as _sk_rbf
 
 
 def linear_kernel(XA, XB=None):
-    """K[i, j] = <XA[i], XB[j]>   (XB=None means XB = XA).
-
-    TODO(classical):
-      - use sklearn.metrics.pairwise.linear_kernel(XA, XB)
-    """
-    raise NotImplementedError("TODO(classical): linear_kernel")
+    """K[i, j] = <XA[i], XB[j]>   (XB=None means XB = XA)."""
+    return _sk_linear(XA, XB)
 
 
 def resolve_gamma(gamma, X_train):
@@ -42,9 +40,9 @@ def resolve_gamma(gamma, X_train):
 def rbf_kernel(XA, XB=None, gamma="scale"):
     """K[i, j] = exp(-gamma * ||XA[i] - XB[j]||^2)   (XB=None means XB = XA).
 
-    TODO(classical):
-      - work out which array is the training set: XA if XB is None, else XB
-      - g = resolve_gamma(gamma, <training set>)
-      - use sklearn.metrics.pairwise.rbf_kernel(XA, XB, gamma=g)
+    The training set is XA for K_train (XB=None) and XB for K_test, so
+    "scale" gamma always comes from the training set.
     """
-    raise NotImplementedError("TODO(classical): rbf_kernel")
+    X_train = XA if XB is None else XB
+    g = resolve_gamma(gamma, np.asarray(X_train))
+    return _sk_rbf(XA, XB, gamma=g)

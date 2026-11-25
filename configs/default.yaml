@@ -16,6 +16,9 @@ svm:
   C_grid: [0.01, 0.1, 1, 10, 100]
   cv_folds: 5
 
+evaluation:
+  measure_memory: true      # peak_memory_mb via tracemalloc (one extra untimed kernel build per run)
+
 rbf:
   gamma: scale
 

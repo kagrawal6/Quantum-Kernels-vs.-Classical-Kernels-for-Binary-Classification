@@ -20,8 +20,9 @@ Then `python scripts/run_experiment.py --sweep baseline --models linear rbf`.
 C tuning, timing, metrics and diagnostics are already done by `src/evaluation/runner.py`.
 
 ## TODO
-- [ ] Linear kernel builder (train + test matrices)
-- [ ] RBF kernel builder with `gamma` (including `"scale"`)
+- [x] Linear kernel builder (train + test matrices)
+- [x] RBF kernel builder with `gamma` (including `"scale"`)
 - [x] CV tuning of `C` with precomputed kernels (shared, in `src/evaluation/runner.py`)
-- [ ] Sanity check: precomputed results match `SVC(kernel="linear"/"rbf")` on the same data
-- [ ] First baseline numbers at the defaults for both datasets
+- [x] Sanity check: precomputed results match `SVC(kernel="linear"/"rbf")` on the same data
+- [x] First baseline numbers at the defaults for both datasets (`results/baseline.csv`; also `features.csv`, `params.csv`)
+- [ ] Classical `train_size` sweep (includes the full-data reference; MNIST full is ~13k points, slow)

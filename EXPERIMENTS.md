@@ -40,6 +40,19 @@ These are the measurements we prioritize. Every run must produce all of them.
 
 `total_time = kernel_train_time + kernel_test_time + fit_time + predict_time`
 
+**Train / validation / test and loss (logged for every run, not timed).**
+Every run reports the same quantities on three splits so over-fitting and tuning quality are visible:
+
+| Split | What it is | Columns |
+|-------|------------|---------|
+| Train | the `n_train` points the final SVM was fit on | `train_accuracy, train_f1, train_hinge_loss` |
+| Validation | mean over the 5 CV folds at the chosen `C` (held-out parts of the training set; this is what picks `C`) | `val_accuracy, val_f1, val_hinge_loss` |
+| Test | the fixed test set, never used for any choice | `accuracy, f1, …, test_hinge_loss` |
+
+- **Loss = hinge loss** `mean(max(0, 1 − y·f(x)))`, `y ∈ {−1, +1}`, `f` = `SVC.decision_function`. This is the loss an SVM minimizes; unlike accuracy it also penalizes correct points inside the margin.
+- **Cost function = SVM primal objective** on the training set: `svm_objective = ½‖w‖² + C·Σ hinge`, with `‖w‖² = αᵀ K_SV α` from the dual coefficients (exact for precomputed kernels; checked against `SVC(kernel="linear")`). Only comparable between runs with the same `C` and `n_train`.
+- `n_support_vectors`: fewer support vectors = simpler boundary and faster inference.
+
 Preprocessing (PCA, scaling) is **not** included in any timer.
 
 ---
@@ -113,6 +126,9 @@ Example: n_train = 200, n_test = 100 → 19,900 + 20,000 ≈ 40k circuits; at 10
 **Kernel diagnostics (explains *why* QSVM fails, ref [4]).** For every kernel (all three models), on the off-diagonal entries of `K_train`: mean, std, min, max. Very small std = kernel concentration.
 
 **Peak memory (low priority).** Peak memory during kernel computation. Kernel matrix grows as n²; statevector simulation grows as 2^qubits.
+- `peak_memory_mb`: measured with `tracemalloc` over building `K_train` + `K_test`, in a **separate untimed repeat** of the kernel build (tracing slows Python, so it never touches the timers). Sees NumPy arrays (kernel matrices, statevectors) but not memory allocated inside native C++/Rust code. Turn off with `--no-memory` or `evaluation.measure_memory: false`.
+- `kernel_matrix_mb`: analytic size of both kernel matrices, `(n_train² + n_test·n_train) × 8 bytes`.
+- `statevector_mb` (QSVM only): analytic size of one complex128 statevector per point, `(n_train + n_test) × 2^qubits × 16 bytes`.
 
 **Optional:** noisy simulator runs for QSVM; real IBM hardware is out of scope unless time allows.
 
@@ -127,10 +143,11 @@ All experiments append rows to CSVs in `results/` with these columns. Leave a co
 | Run settings | `run_id, timestamp, sweep, dataset, model, seed, n_features, n_train, n_test` |
 | Model parameters | `C, gamma, feature_map, reps, entanglement, bandwidth, shots, backend` |
 | Quality (priority) | `accuracy, precision, recall, f1` |
+| Train / val / test and loss | `train_accuracy, train_f1, train_hinge_loss, val_accuracy, val_f1, val_hinge_loss, test_hinge_loss, svm_objective, n_support_vectors` |
 | Time (priority) | `kernel_train_time, kernel_test_time, fit_time, predict_time, total_time` |
 | Quantum cost (secondary) | `n_circuits, total_shots, circuit_depth, n_2q_gates` |
 | Kernel diagnostics (secondary) | `kernel_offdiag_mean, kernel_offdiag_std, kernel_offdiag_min, kernel_offdiag_max` |
-| Memory (low priority) | `peak_memory_mb` |
+| Memory (low priority) | `peak_memory_mb, kernel_matrix_mb, statevector_mb` |
 
 ---
 

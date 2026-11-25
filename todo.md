@@ -23,7 +23,7 @@ Phased plan. Details for each area are in that folder's `README.md`; measurement
 - [x] PCA / SelectKBest + train-only scaling to `[0, π]`
 
 **Classical** — [src/classical/](src/classical/README.md)
-- [ ] Linear and RBF kernel builders (precomputed)
+- [x] Linear and RBF kernel builders (precomputed)
 - [x] CV tuning of `C`
 
 **Quantum** — [src/quantum/](src/quantum/README.md)
@@ -50,7 +50,8 @@ Phased plan. Details for each area are in that folder's `README.md`; measurement
 **Secondary**
 - [ ] Shots sweep (QSVM)
 - [ ] Kernel diagnostics across sweeps (concentration check [4])
-- [ ] Peak memory (low priority)
+- [x] Peak memory (low priority) — `peak_memory_mb` via tracemalloc, plus analytic `kernel_matrix_mb` / `statevector_mb`
+- [x] Loss / cost function and train / validation / test metrics on every run
 - [ ] Optional: noisy simulator
 
 **Milestone:** all CSVs in `results/`.

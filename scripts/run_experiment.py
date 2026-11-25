@@ -12,6 +12,7 @@ Useful options:
     --datasets breast_cancer     only some datasets
     --seeds 0                    quick test with one seed
     --dry-run                    list the runs without running them
+    --no-memory                  skip the peak-memory measurement
     --config configs/default.yaml
 
 Output: results/<sweep>.csv (appends). Runs already in the CSV are skipped,
@@ -43,6 +44,8 @@ def main():
     ap.add_argument("--seeds", nargs="+", type=int)
     ap.add_argument("--out", help="CSV path (default results/<sweep>.csv)")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--no-memory", action="store_true",
+                    help="skip peak_memory_mb (saves one extra kernel build per run)")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -51,6 +54,8 @@ def main():
     C_grid, cv_folds = cfg["svm"]["C_grid"], cfg["svm"]["cv_folds"]
     out = Path(args.out) if args.out else ROOT / "results" / f"{args.sweep}.csv"
     budget_min = cfg["sweeps"].get("time_budget_minutes")
+    measure_memory = (not args.no_memory
+                      and cfg.get("evaluation", {}).get("measure_memory", True))
 
     jobs = make_jobs(cfg, args.sweep, args.datasets, args.models)
     print(f"{args.sweep}: {len(jobs)} settings x {len(seeds)} seeds -> {_rel(out)}")
@@ -84,7 +89,7 @@ def main():
                 t0 = time.perf_counter()
                 row = run_one(ds, model, seed, job["n_features"], n_train, n_test,
                               job["params"], C_grid, cv_folds, sweep=args.sweep,
-                              data=data)
+                              data=data, measure_memory=measure_memory)
             except NotImplementedError as e:
                 print(f"  SKIP {model}: {e}")
                 todo_models.add(model)
@@ -94,7 +99,9 @@ def main():
             n_new += 1
             print(f"  {ds:13s} {model:6s} seed={seed} f={job['n_features']} "
                   f"n={row['n_train']:<5} {_short(job['params'])}  "
-                  f"acc={row['accuracy']:.3f} f1={row['f1']:.3f}  "
+                  f"acc={row['accuracy']:.3f} f1={row['f1']:.3f} "
+                  f"(train {row['train_f1']:.3f} / val {row['val_f1']:.3f}) "
+                  f"hinge={row['test_hinge_loss']:.3f}  "
                   f"kernel={row['kernel_train_time'] + row['kernel_test_time']:.3f}s "
                   f"({time.perf_counter() - t0:.1f}s incl. tuning)")
             if (model == "qsvm" and args.sweep == "train_size" and budget_min

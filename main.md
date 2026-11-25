@@ -33,8 +33,8 @@ Who fills in what:
 | Part | File | Status |
 |------|------|--------|
 | Data (Steve) | `src/data/` | done |
-| Evaluation harness (shared) | `src/evaluation/`, `scripts/run_experiment.py` | done: tuning, timing, metrics, CSV rows, sweeps, resume |
-| Classical (Jerry + Colin) | `src/classical/kernels.py` | **template: fill the 2 TODOs** |
+| Evaluation harness (shared) | `src/evaluation/`, `scripts/run_experiment.py` | done: tuning, timing, metrics, train/val/test + hinge loss + SVM objective, peak memory, CSV rows, sweeps, resume |
+| Classical (Jerry + Collin) | `src/classical/kernels.py` | done: linear + RBF, match `SVC(kernel="linear"/"rbf")` exactly |
 | Quantum (Kushal) | `src/quantum/kernels.py` | done: Z/ZZ feature maps, exact + shot-noise kernels, cost counts; bandwidth 0.05 explained in [src/quantum/BANDWIDTH.md](src/quantum/BANDWIDTH.md) |
 | Analysis (Everyone) | run the sweeps, `scripts/summarize.py`, figures | figures TODO |
 

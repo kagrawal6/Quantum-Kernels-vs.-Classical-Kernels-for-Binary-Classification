@@ -9,9 +9,13 @@ from pathlib import Path
 
 import pandas as pd
 
-METRICS = ["accuracy", "f1", "precision", "recall", "kernel_train_time",
-           "kernel_test_time", "fit_time", "predict_time", "total_time",
-           "kernel_offdiag_std", "n_circuits"]
+METRICS = ["accuracy", "f1", "precision", "recall",
+           "train_accuracy", "train_f1", "val_accuracy", "val_f1",
+           "train_hinge_loss", "val_hinge_loss", "test_hinge_loss",
+           "svm_objective", "n_support_vectors",
+           "kernel_train_time", "kernel_test_time", "fit_time", "predict_time",
+           "total_time", "kernel_offdiag_std", "n_circuits",
+           "peak_memory_mb", "kernel_matrix_mb", "statevector_mb"]
 SETTING = ["sweep", "dataset", "model", "n_features", "n_train", "gamma",
            "feature_map", "reps", "entanglement", "bandwidth", "shots"]
 
@@ -37,6 +41,9 @@ def main():
     view = s[show].copy()
     for m in ["accuracy", "f1"]:
         view[m] = s[f"{m}_mean"].map("{:.3f}".format) + " ± " + s[f"{m}_std"].fillna(0).map("{:.3f}".format)
+    for m in ["train_f1", "val_f1", "test_hinge_loss", "peak_memory_mb"]:
+        if f"{m}_mean" in s:
+            view[m] = s[f"{m}_mean"].map("{:.3f}".format)
     view["total_time_s"] = s["total_time_mean"].map("{:.4f}".format)
     view["seeds"] = s["n_seeds"]
     print(view.to_string(index=False))

@@ -9,7 +9,8 @@ Everything here follows [EXPERIMENTS.md](../../EXPERIMENTS.md) — metric defini
 - **Timers:** time exactly these four steps and nothing else:
   `kernel_train_time`, `kernel_test_time`, `fit_time`, `predict_time` (+ `total_time` = sum).
   Use `time.perf_counter()`; exclude preprocessing.
-- **Memory (low priority):** peak memory during kernel computation (e.g. `tracemalloc`).
+- **Train / validation / test + loss:** accuracy, F1 and hinge loss on each split, plus the SVM objective `½‖w‖² + C·Σ hinge` (EXPERIMENTS.md Section 2).
+- **Memory (low priority):** peak memory during kernel computation (`tracemalloc`, separate untimed pass).
 - **Run one setting:** data → kernel → tune `C` → fit → predict → metrics → one CSV row.
 - **Sweeps:** loop one variable at a time over all models and 5 seeds, holding everything else at the defaults.
 - **Summaries:** group by setting and model, report mean ± std over seeds.
@@ -28,4 +29,5 @@ Everything here follows [EXPERIMENTS.md](../../EXPERIMENTS.md) — metric defini
 - [x] Shots sweep for QSVM (secondary)
 - [x] Summary table (mean ± std over seeds) — `scripts/summarize.py`
 - [x] Record the machine specs used for timing
-- [ ] Peak memory (low priority; column exists, left empty)
+- [x] Peak memory (low priority; `--no-memory` to skip)
+- [x] Train / validation / test metrics, hinge loss, SVM objective

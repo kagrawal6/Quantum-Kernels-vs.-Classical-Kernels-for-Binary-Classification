@@ -46,5 +46,5 @@ Output `results/hardware/<run>/summary.csv` compares exact simulation, simulated
 - [x] Kernel diagnostics
 - [x] First QSVM result at the defaults (both datasets)
 - [x] Bandwidth study (why 0.05; why 0.25 on hardware)
-- [ ] Measure how long one run takes at `n_train` = 100, 200 to help set the time budget
+- [x] Measure how long one run takes: exact simulation is not the bottleneck (4 qubits, `n_train` = 400: K_train 0.31 s, K_test 0.18 s). On hardware the same run is 119,800 circuits, so the budget is set by circuits, not simulator time.
 - [ ] Optional: noisy simulator; optional: IBM hardware

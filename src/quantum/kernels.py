@@ -92,8 +92,9 @@ def quantum_kernel(XA, XB=None, feature_map="zz", reps=2, entanglement="linear",
 
     if shots is not None:
         symmetric = XB is None
-        # Different seed for the test kernel so its noise is independent of K_train.
-        K = add_shot_noise(K, int(shots), seed if symmetric else seed + 1, symmetric)
+        # Separate stream for the test kernel: independent of K_train, and unlike
+        # seed + 1 it cannot coincide with the next run's training-kernel noise.
+        K = add_shot_noise(K, int(shots), seed if symmetric else [seed, 1], symmetric)
     return K
 
 

@@ -20,5 +20,6 @@ Picked on a validation split (100 train / 200 val from the non-test pool, 5 seed
 
 **Caveats**
 - 0.05 stays within 0.02 F1 of the best λ for 2–8 qubits; with reps = 3, 0.025 is slightly better.
+- The sensitivity comes from the ZZ map: its two-qubit phase 2(π − xᵢ)(π − xⱼ) changes several times faster than the single-qubit rotations. The Z map is flat from 0.05 to 0.5 and is within ~0.015 F1 of its own best at 0.05, so the Z vs ZZ comparison at the default is fair.
 - With finite shots, λ = 0.1 holds up better: when all kernel values are near 1, shot noise hides the small differences between them.
 - The hardware run uses 0.25 because it has only 8 training points and a fixed C = 1. At 0.05 that setup predicts "benign" for almost everything.

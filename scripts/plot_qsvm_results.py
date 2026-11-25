@@ -161,7 +161,7 @@ def fig_design():
         f1, sd = [], []
         for label, over in configs:
             want = {**DEFAULT, **over}
-            m = (d.dataset == ds).to_numpy()
+            m = (d.dataset == ds).to_numpy().copy()
             for key, v in want.items():
                 m &= (d[key] == v).to_numpy()
             s = d[m]

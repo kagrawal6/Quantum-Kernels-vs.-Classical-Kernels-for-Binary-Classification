@@ -101,7 +101,7 @@ Machine-readable copy: `configs/default.yaml`. Keep both in sync.
 Not the main focus, but they make the comparison honest and help explain results.
 
 **Shots sweep (QSVM only).** Shots are the key NISQ constraint.
-`shots` ∈ {exact, 256, 1024, 4096} — record all Section 2 metrics.
+`shots` ∈ {exact, 256, 1024, 4096, 16384, 65536, 262144} — record all Section 2 metrics. (Extended past 4096 because F1 was still well below exact there; shots are simulated by binomial sampling, so large counts cost no extra time.)
 
 **Hardware-independent quantum cost.** Simulator time is our laptop simulating circuits, which grows exponentially with qubits and does not reflect real quantum hardware. So for QSVM also record:
 - `n_circuits` — train kernel needs n_train(n_train−1)/2, test kernel needs n_test × n_train

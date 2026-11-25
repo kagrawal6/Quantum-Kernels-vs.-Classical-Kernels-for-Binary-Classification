@@ -35,7 +35,7 @@ Who fills in what:
 | Data (Steve) | `src/data/` | done |
 | Evaluation harness (shared) | `src/evaluation/`, `scripts/run_experiment.py` | done: tuning, timing, metrics, CSV rows, sweeps, resume |
 | Classical (Jerry + Colin) | `src/classical/kernels.py` | **template: fill the 2 TODOs** |
-| Quantum (Kushal) | `src/quantum/kernels.py` | **template: fill the TODOs** |
+| Quantum (Kushal) | `src/quantum/kernels.py` | done: Z/ZZ feature maps, exact + shot-noise kernels, cost counts; bandwidth 0.05 explained in [src/quantum/BANDWIDTH.md](src/quantum/BANDWIDTH.md) |
 | Analysis (Everyone) | run the sweeps, `scripts/summarize.py`, figures | figures TODO |
 
 A kernel is just `kernel(XA, XB=None, **params) -> matrix`. The harness does everything else, identically for all three models.

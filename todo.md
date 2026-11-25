@@ -27,9 +27,10 @@ Phased plan. Details for each area are in that folder's `README.md`; measurement
 - [x] CV tuning of `C`
 
 **Quantum** — [src/quantum/](src/quantum/README.md)
-- [ ] Z / ZZ feature maps with reps, entanglement, bandwidth
-- [ ] Exact (statevector) kernel builder
-- [ ] Cost counts + kernel diagnostics
+- [x] Z / ZZ feature maps with reps, entanglement, bandwidth
+- [x] Exact (statevector) kernel builder
+- [x] Cost counts + kernel diagnostics
+- [x] Bandwidth default justified (0.05; see [src/quantum/BANDWIDTH.md](src/quantum/BANDWIDTH.md))
 
 **Evaluation** — [src/evaluation/](src/evaluation/README.md)
 - [x] Metrics + timers + single-run function writing one CSV row

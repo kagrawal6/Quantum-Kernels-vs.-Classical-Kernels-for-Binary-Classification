@@ -45,8 +45,9 @@ def load_mnist_3v5():
         return d["X"], d["y"]
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
+    # parser="liac-arff": sklearn's pandas ARFF parser crashes on pandas 3.x.
     X, labels = fetch_openml(
-        "mnist_784", version=1, as_frame=False, parser="auto", return_X_y=True,
+        "mnist_784", version=1, as_frame=False, parser="liac-arff", return_X_y=True,
         data_home=str(RAW_DIR),
     )
     labels = labels.astype(str)  # OpenML gives the digits as strings

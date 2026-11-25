@@ -3,7 +3,7 @@
 Quantum kernel SVM (QSVM) using the quantum kernel estimator (QKE) approach from Havlíček et al. [3]: encode data into quantum states, estimate pairwise overlaps to build the kernel matrix, then train a classical SVM.
 
 ## Responsibilities
-- Feature maps: Z and ZZ (Qiskit `ZFeatureMap`, `ZZFeatureMap`) with `reps`, entanglement, and bandwidth λ (multiply inputs by λ before encoding).
+- Feature maps: Z and ZZ (Qiskit `z_feature_map`, `zz_feature_map`; the `ZFeatureMap` / `ZZFeatureMap` classes are deprecated since Qiskit 2.1) with `reps`, entanglement, and bandwidth λ (multiply inputs by λ before encoding).
 - Kernel matrices: return `K_train` `(n_train, n_train)` and `K_test` `(n_test, n_train)` (see [src/README.md](../README.md)).
   - Default: exact statevector simulation (e.g. Qiskit Machine Learning `FidelityStatevectorKernel`).
   - Shots mode: sampler-based kernel with a set number of shots (for the shots sweep).
@@ -15,10 +15,12 @@ Quantum kernel SVM (QSVM) using the quantum kernel estimator (QKE) approach from
 Watch for concentration [4]: if off-diagonal values bunch together, try fewer `reps`, linear entanglement, or a smaller bandwidth.
 
 ## Start here
-Fill the TODOs in [kernels.py](kernels.py) (`build_feature_map`, `quantum_kernel`, depth / 2-qubit gates in `quantum_cost`), then run `python scripts/check_kernels.py quantum`.
-It checks your kernel against statevector overlaps computed directly, checks the shot-noise behaviour, and checks the cost counts.
-Then `python scripts/run_experiment.py --sweep baseline --models qsvm`.
-Shot noise (`add_shot_noise`) and `n_circuits` / `total_shots` are already implemented; C tuning, timing, metrics and diagnostics are done by `src/evaluation/runner.py`.
+[kernels.py](kernels.py) is implemented. `python scripts/check_kernels.py quantum` checks it against statevector overlaps computed directly, checks the shot-noise behaviour, and checks the cost counts.
+Then `python scripts/run_experiment.py --sweep baseline --models qsvm` (defaults, test set: F1 0.93 Breast Cancer / 0.87 MNIST, ~0.1 s per kernel; one kernel circuit at 4 qubits = depth 39, 22 CNOTs).
+C tuning, timing, metrics and diagnostics are done by `src/evaluation/runner.py`.
+
+## Why bandwidth 0.05
+See [BANDWIDTH.md](BANDWIDTH.md). Full study: `python scripts/bandwidth_study.py` (figure in `figures/bandwidth_study.png`, per-seed rows in `results/bandwidth_study/`).
 
 ## Real hardware (AWS Braket) — `scripts/run_hardware.py`
 Settings in the `hardware:` section of `configs/default.yaml` (default: Breast Cancer, 2 qubits, 8 train / 6 test, 200 shots → 76 circuits ≈ **$29** on Rigetti Cepheus, $45 on IQM Garnet; IonQ Forte would be ≈ $1,239).
@@ -37,11 +39,12 @@ Output `results/hardware/<run>/summary.csv` compares exact simulation, simulated
 
 ## TODO
 - [x] Set up Qiskit + Qiskit Machine Learning + Aer (installed: qiskit 2.6.1, qiskit-machine-learning 0.9.1, qiskit-aer 0.18.2)
-- [ ] Z and ZZ feature maps with reps / entanglement / bandwidth
-- [ ] Exact (statevector) kernel builder
-- [ ] Shot-based kernel builder
-- [ ] Cost counts (circuits, shots, depth, two-qubit gates)
-- [ ] Kernel diagnostics
-- [ ] First QSVM result at the defaults on Breast Cancer
+- [x] Z and ZZ feature maps with reps / entanglement / bandwidth
+- [x] Exact (statevector) kernel builder
+- [x] Shot-based kernel builder
+- [x] Cost counts (circuits, shots, depth, two-qubit gates)
+- [x] Kernel diagnostics
+- [x] First QSVM result at the defaults (both datasets)
+- [x] Bandwidth study (why 0.05; why 0.25 on hardware)
 - [ ] Measure how long one run takes at `n_train` = 100, 200 to help set the time budget
 - [ ] Optional: noisy simulator; optional: IBM hardware

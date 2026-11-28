@@ -62,7 +62,7 @@ Preprocessing (PCA, scaling) is **not** included in any timer.
 | Sweep | What changes | Record |
 |-------|--------------|--------|
 | **Feature count** | `n_features` ∈ {2, 4, 6, 8} | all Section 2 metrics |
-| **Training set size** | `n_train` ∈ {25, 50, 100, 200, 400, …} — keep doubling until one QSVM run exceeds the agreed time budget (this is our practical "what NISQ can handle" limit). Classical models also run at the full training set as a reference. | all Section 2 metrics |
+| **Training set size** | `n_train` ∈ {25, 50, 100, 200, 400, 800, 1600, full}, the same for all three models (full = every non-test point: 469 Breast Cancer, 13,354 MNIST). On the statevector simulator QSVM handles all of these; the real limit is hardware, where n_train points need n_train(n_train−1)/2 + n_test·n_train circuits (Section 6). | all Section 2 metrics |
 | **Model parameters** | see Section 4 | all Section 2 metrics |
 
 With angle encoding, **qubits = features**, so the feature-count sweep is also our qubit sweep.

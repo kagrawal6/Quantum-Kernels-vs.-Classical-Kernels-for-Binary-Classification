@@ -39,7 +39,7 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-from sklearn.metrics import f1_score, make_scorer
+from sklearn.metrics import accuracy_score, f1_score, make_scorer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.svm import SVC
 
@@ -54,7 +54,7 @@ COLUMNS = [
     "run_id", "timestamp", "sweep", "dataset", "model", "seed",
     "n_features", "n_train", "n_test",
     # model parameters
-    "C", "gamma", "feature_map", "reps", "entanglement", "bandwidth",
+    "C", "alpha", "gamma", "feature_map", "reps", "entanglement", "bandwidth",
     "shots", "backend",
     # quality (test set)
     "accuracy", "precision", "recall", "f1",
@@ -163,6 +163,9 @@ def run_one(dataset, model, seed, n_features, n_train, n_test, params,
     if data is None:
         data = get_data(dataset, n_features, n_train, seed, n_test=n_test)
     X_train, X_test, y_train, y_test = data
+    if "estimator" in spec:   # neural-network baseline: no kernel
+        return _run_estimator(dataset, model, seed, n_features, data,
+                              cv_folds, sweep)
 
     kparams = {k: params[k] for k in spec["params"] if k in params}
     if spec["seeded"]:
@@ -219,6 +222,46 @@ def run_one(dataset, model, seed, n_features, n_train, n_test, params,
     if spec["cost"] is not None:
         row.update(spec["cost"](n_features=n_features, n_train=len(y_train),
                                 n_test=len(y_test), **kparams))
+    return row
+
+
+def _run_estimator(dataset, model, seed, n_features, data, cv_folds, sweep):
+    """Run a model that learns from the features directly (the MLP baseline).
+
+    Same data, seeds, fixed test set, 5-fold CV with F1 and CSV columns as
+    the SVMs. Kernel and SVM-specific columns (kernel times, hinge loss,
+    support vectors, kernel diagnostics, C) are left empty; the tuned
+    hyper-parameter goes in `alpha`. fit_time is the whole network training.
+    """
+    from sklearn.base import clone
+
+    X_train, X_test, y_train, y_test = data
+    est, grid = MODELS[model]["estimator"](seed)
+    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=seed)
+    search = GridSearchCV(est, grid, cv=cv, refit="f1",
+                          scoring={"f1": make_scorer(f1_score, zero_division=0),
+                                   "accuracy": "accuracy"})
+    search.fit(X_train, y_train)
+    i, r = search.best_index_, search.cv_results_
+
+    clf = clone(search.best_estimator_)          # retrain once, timed
+    _, t_fit = _timed(clf.fit, X_train, y_train)
+    y_pred, t_pred = _timed(clf.predict, X_test)
+    y_fit = clf.predict(X_train)
+
+    row = {c: "" for c in COLUMNS}
+    row.update({
+        "run_id": uuid.uuid4().hex[:12],
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "sweep": sweep, "dataset": dataset, "model": model, "seed": seed,
+        "n_features": n_features, "n_train": len(y_train),
+        "n_test": len(y_test), "alpha": search.best_params_["alpha"],
+        "fit_time": t_fit, "predict_time": t_pred, "total_time": t_fit + t_pred,
+        "train_accuracy": accuracy_score(y_train, y_fit),
+        "train_f1": f1_score(y_train, y_fit, zero_division=0),
+        "val_f1": r["mean_test_f1"][i], "val_accuracy": r["mean_test_accuracy"][i],
+    })
+    row.update(classification_metrics(y_test, y_pred))
     return row
 
 

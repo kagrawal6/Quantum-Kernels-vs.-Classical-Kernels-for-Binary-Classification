@@ -8,7 +8,7 @@ everything else at the defaults (EXPERIMENTS.md ground rule 6).
 import yaml
 
 SWEEPS = ("baseline", "features", "train_size", "params", "shots")
-ALL_MODELS = ("linear", "rbf", "qsvm")
+ALL_MODELS = ("linear", "rbf", "qsvm", "mlp")
 
 
 def load_config(path):
@@ -18,7 +18,7 @@ def load_config(path):
 
 def default_params(cfg, model):
     """Kernel parameters at the defaults for one model."""
-    if model == "linear":
+    if model in ("linear", "mlp"):
         return {}
     if model == "rbf":
         return {"gamma": cfg["rbf"]["gamma"]}
@@ -58,8 +58,7 @@ def make_jobs(cfg, sweep, datasets=None, models=None):
                 # run exceeds the time budget.
                 for nt in sorted(s["n_train"]):
                     add(ds, m, n_train=nt)
-                if m != "qsvm":
-                    add(ds, m, n_train="full")  # classical reference on all data
+                add(ds, m, n_train="full")  # all non-test data, every model
             elif sweep == "params":
                 if m == "rbf":
                     for g in s["rbf_gamma"]:

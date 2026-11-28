@@ -139,8 +139,8 @@ def fig_train_size():
     fig, a = plt.subplots(figsize=(6.2, 3.8))
     for ds in DATASETS:
         plot_mean_std(a, d[d.dataset == ds], "n_train", ds, label=NAME[ds])
-    a.set(xscale="log", xticks=[25, 50, 100, 200, 400],
-          xticklabels=["25", "50", "100", "200", "400"], xlabel="training points",
+    a.set(xscale="log", xticks=[25, 100, 400, 1600, 13354],
+          xticklabels=["25", "100", "400", "1600", "13k"], xlabel="training points (log; last = all data)",
           ylabel="test F1", ylim=(0.6, 1.0), title="QSVM F1 vs training size")
     a.legend(loc="lower right")
     save(fig, "qsvm_train_size.png")
@@ -170,7 +170,7 @@ def fig_design():
                 cx.append(s.n_2q_gates.iloc[0])
         a.errorbar(f1, y + (0.12 if k == 0 else -0.12), xerr=sd, fmt=MARKER[ds], color=COLOR[ds],
                    capsize=3, elinewidth=1, markeredgecolor=SURFACE, markeredgewidth=1.5, label=NAME[ds])
-    a.set_yticks(y, [f"{c}\n{n} CX gates" for (c, _), n in zip(configs, cx)])
+    a.set_yticks(y, [f"{c}\n{int(n)} CX gates" for (c, _), n in zip(configs, cx)])
     a.set(xlabel="test F1 (4 qubits, 100 training points, bandwidth 0.05)", xlim=(0.78, 0.97),
           title="Entanglement does not help: the classically easy Z map matches ZZ")
     a.grid(axis="y", visible=False)
@@ -347,9 +347,12 @@ def fig_boundaries():
 
 # 9. Timing: kernel computation, SVM training, inference --------------------------
 MODEL_STYLE = {  # (label, color, marker, linestyle); models are the entities here
-    "linear": ("Linear SVM", "#8a8984", "s", "--"),
-    "rbf": ("RBF SVM", INK, "^", "-."),
-    "qsvm": ("QSVM (simulator)", "#6250d6", "o", "-"),
+    "linear": ("Linear SVM", "#2a78d6", "s", "--"),    # blue / orange / aqua: validated
+    "rbf": ("RBF SVM", "#eb6834", "^", "-."),           # for colorblind separation
+    "qsvm": ("QSVM (simulator)", "#1baf7a", "o", "-"),
+    # neural-net reference: neutral ink, distinct marker + dotted line (no 4th hue
+    # passes the colorblind check next to blue / orange / aqua)
+    "mlp": ("Neural net (MLP)", "#52514e", "D", ":"),
 }
 
 
@@ -360,23 +363,25 @@ def fig_timing():
     ft = pd.read_csv(RES / "features.csv")
     for d in (ts, ft):
         d["kernel_time"] = d.kernel_train_time + d.kernel_test_time
-    sizes = [25, 50, 100, 200, 400]
+    sizes = [25, 50, 100, 200, 400, 800, 1600]  # "all data" differs per dataset, so left out
     ts = ts[ts.n_train.isin(sizes)]
     panels = [(ts, "n_train", "kernel_time", "Kernel computation vs training size", "training points"),
               (ft, "n_features", "kernel_time", "Kernel computation vs qubits", "qubits (= features)"),
-              (ts, "n_train", "fit_time", "SVM training (fit) vs training size", "training points"),
+              (ts, "n_train", "fit_time", "Training (fit) vs training size", "training points"),
               (ts, "n_train", "predict_time", "Inference (predict) vs training size", "training points")]
     fig, axes = plt.subplots(2, 2, figsize=(10.5, 7.6), gridspec_kw={"hspace": 0.45, "wspace": 0.28})
     present = [m for m in MODEL_STYLE if m in set(ts.model)]
     for a, (d, by, col, ttl, xl) in zip(axes.ravel(), panels):
         for m in present:
+            if col == "kernel_time" and m == "mlp":
+                continue  # the neural net has no kernel
             label, color, mk, ls = MODEL_STYLE[m]
             g = d[d.model == m].groupby(by)[col].agg(["mean", "std"])
             a.errorbar(g.index, g["mean"], yerr=g["std"], color=color, marker=mk, ls=ls, capsize=3,
                        elinewidth=1, markeredgecolor=SURFACE, markeredgewidth=1.2, label=label)
-        a.set(yscale="log", ylabel="time (log scale)", xlabel=xl, title=ttl, ylim=(1e-5, 3))
-        a.set_yticks([1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1],
-                     ["10 µs", "100 µs", "1 ms", "10 ms", "0.1 s", "1 s"])
+        a.set(yscale="log", ylabel="time (log scale)", xlabel=xl, title=ttl, ylim=(1e-5, 30))
+        a.set_yticks([1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10],
+                     ["10 µs", "100 µs", "1 ms", "10 ms", "0.1 s", "1 s", "10 s"])
         a.yaxis.set_minor_locator(matplotlib.ticker.NullLocator())
         if by == "n_train":
             a.set_xscale("log")

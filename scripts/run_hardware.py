@@ -2,6 +2,7 @@
 
 Settings: `hardware:` section of configs/default.yaml.
 
+    python scripts/run_hardware.py --list-devices       # 0. free: which devices exist and are online
     python scripts/run_hardware.py                      # 1. PLAN: cost estimate only, spends nothing
     python scripts/run_hardware.py --local aer          # 2. free: full pipeline on a local simulator
     python scripts/run_hardware.py --local braket_local # 3. free: same, through the Braket SDK
@@ -135,7 +136,56 @@ def compare(hw, data, K_measured, label, out_dir):
             "kernel_offdiag_mean", "kernel_offdiag_std"]
     print("\n" + df[cols].to_string(index=False, float_format="{:.3f}".format))
     print(f"\n(test set is only {len(yte)} points: compare the KERNELS (mae, std) more than accuracy)")
-    print(f"Saved to {out_dir.relative_to(ROOT)}/")
+    plot_kernels(kernels, label, hw, out_dir)
+    print(f"Saved to {out_dir.relative_to(ROOT)}/  (summary.csv, kernels.npz, kernel_vs_exact.png)")
+
+
+def plot_kernels(kernels, label, hw, out_dir):
+    """Scatter of every measured kernel entry against its exact simulated value."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    def entries(name):
+        Ktr, Kte = kernels[name]
+        return np.concatenate([np.asarray(Ktr)[np.triu_indices(len(Ktr), 1)], np.asarray(Kte).ravel()])
+
+    exact = entries("exact_sim")
+    shot = f"shot_sim_{hw['shots']}"
+    fig, ax = plt.subplots(figsize=(5.6, 5.2))
+    fig.patch.set_facecolor("#fcfcfb")
+    ax.set_facecolor("#fcfcfb")
+    ax.plot([0, 1], [0, 1], color="#8a8984", lw=1, ls="--", label="perfect agreement")
+    for name, lab, color, mk in [(shot, f"simulated shot noise only ({hw['shots']} shots)", "#2a78d6", "o"),
+                                 (label, "measured on " + label.replace("measured_", ""), "#eb6834", "s")]:
+        mae = np.abs(entries(name) - exact).mean()
+        ax.scatter(exact, entries(name), s=26, color=color, marker=mk, edgecolors="#fcfcfb",
+                   linewidths=0.6, label=f"{lab}: mean error {mae:.3f}", zorder=3)
+    ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="exact kernel value (statevector simulation)",
+           ylabel="estimated kernel value")
+    ax.set_title("Each dot = one kernel entry (one circuit)", loc="left", fontsize=11, fontweight="bold")
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    ax.grid(color="#e4e3de", lw=0.8)
+    ax.legend(loc="upper left", fontsize=8.5, frameon=False)
+    fig.text(0.01, -0.02, f"{hw['dataset']}, {hw['n_features']} qubits, {hw['n_train']} train + "
+             f"{hw['n_test']} test points, {hw['feature_map'].upper()} map, bandwidth {hw['bandwidth']}. "
+             "Spread beyond the blue dots = hardware noise.", fontsize=8, color="#52514e")
+    fig.savefig(out_dir / "kernel_vs_exact.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
+def list_devices():
+    """Free: list AWS Braket quantum devices, their status and qubit counts."""
+    from braket.aws import AwsDevice
+    print(f"{'name':18s} {'provider':12s} {'status':10s} {'qubits':>6s}  arn")
+    for d in AwsDevice.get_devices(types=["QPU"]):
+        try:
+            q = d.properties.paradigm.qubitCount
+        except Exception:
+            q = "?"
+        print(f"{d.name:18s} {d.provider_name:12s} {d.status:10s} {q!s:>6s}  {d.arn}")
+    print("\nThe `device:` in configs/default.yaml must match a name above (and a key in `prices`).")
 
 
 def main():
@@ -145,8 +195,12 @@ def main():
     g.add_argument("--local", choices=["aer", "braket_local"], help="free local simulator run")
     g.add_argument("--smoke-test", action="store_true", help="one circuit on the real device")
     g.add_argument("--submit", action="store_true", help="the full run on the real device")
+    g.add_argument("--list-devices", action="store_true",
+                   help="free: list AWS Braket devices and their status")
     ap.add_argument("--config", default=str(ROOT / "configs" / "default.yaml"))
     args = ap.parse_args()
+    if args.list_devices:
+        return list_devices()
 
     hw = yaml.safe_load(open(args.config))["hardware"]
     ledger = Ledger(HW_DIR / "spend_ledger.csv")

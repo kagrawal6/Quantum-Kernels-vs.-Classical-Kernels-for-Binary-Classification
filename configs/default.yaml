@@ -32,7 +32,7 @@ quantum:
 sweeps:
   # priority
   n_features: [2, 4, 6, 8]
-  n_train: [25, 50, 100, 200, 400]   # extend by doubling until QSVM exceeds time budget
+  n_train: [25, 50, 100, 200, 400, 800, 1600]   # + "full" (all non-test data), same for every model
   time_budget_minutes: null          # TODO: agree as a team
   rbf_gamma: [0.01, 0.1, 1, 10, scale]
   feature_map: [z, zz]

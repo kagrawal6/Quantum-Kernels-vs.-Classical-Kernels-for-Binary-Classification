@@ -10,4 +10,4 @@ qiskit-aer
 pyyaml
 tqdm
 # Real-hardware run only (scripts/run_hardware.py); also needs AWS credentials:
-# qiskit-braket-provider
+qiskit-braket-provider   # AWS Braket (hardware run); installs amazon-braket-sdk

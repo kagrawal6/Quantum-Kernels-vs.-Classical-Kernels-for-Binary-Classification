@@ -101,9 +101,11 @@ def main():
                   f"n={row['n_train']:<5} {_short(job['params'])}  "
                   f"acc={row['accuracy']:.3f} f1={row['f1']:.3f} "
                   f"(train {row['train_f1']:.3f} / val {row['val_f1']:.3f}) "
-                  f"hinge={row['test_hinge_loss']:.3f}  "
-                  f"kernel={row['kernel_train_time'] + row['kernel_test_time']:.3f}s "
-                  f"({time.perf_counter() - t0:.1f}s incl. tuning)")
+                  + (f"hinge={row['test_hinge_loss']:.3f}  "
+                     f"kernel={row['kernel_train_time'] + row['kernel_test_time']:.3f}s "
+                     if row["kernel_train_time"] != "" else
+                     f"(no kernel) fit={row['fit_time']:.3f}s ")
+                  + f"({time.perf_counter() - t0:.1f}s incl. tuning)")
             if (model == "qsvm" and args.sweep == "train_size" and budget_min
                     and row["total_time"] > budget_min * 60):
                 print(f"  QSVM exceeded the {budget_min}-min budget at n_train={row['n_train']} "
